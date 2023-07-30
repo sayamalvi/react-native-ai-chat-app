@@ -1,12 +1,8 @@
-import {ScrollView, Text} from 'react-native';
+import {SafeAreaView, Text} from 'react-native';
 import React from 'react';
-
+import AppNavigation from './src/navigation';
 const App = () => {
-  return (
-    <ScrollView className="bg-slate-700">
-      <Text>Hello world</Text>
-    </ScrollView>
-  );
+  return <AppNavigation />;
 };
 
 export default App;
