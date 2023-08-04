@@ -6,13 +6,14 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Features from '../components/Features';
 import {dummyMessages} from '../constants/messages';
+import Voice from '@react-native-community/voice';
 
 const HomeScreen = () => {
   const [messages, setMessages] = useState(dummyMessages);
@@ -24,6 +25,47 @@ const HomeScreen = () => {
   const clear = () => {
     setMessages([]);
   };
+  const speechStartHandler = () => {
+    console.log('Speech Started');
+  };
+  const speechEndHandler = () => {
+    setRecording(false);
+    console.log('Speech ended');
+  };
+  const speechResultsHandler = e => {
+    console.log('Voice event', e);
+  };
+  const speechErrorHandler = e => {
+    console.log('Voice event', e);
+  };
+  const startRecording = async () => {
+    setRecording(true);
+    try {
+      await Voice.start('en-US');
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const stopRecording = async () => {
+    try {
+      await Voice.stop();
+      setRecording(false);
+      //fetch response
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    Voice.onSpeechStart = speechStartHandler;
+    Voice.onSpeechEnd = speechEndHandler;
+    Voice.onSpeechResults = speechResultsHandler;
+    Voice.onSpeechError = speechErrorHandler;
+    return () => {
+      Voice.destroy()
+        .then(Voice.removeAllListeners)
+        .catch(e => console.log(e));
+    }
+  }, []);
   return (
     <View className="flex-1 bg-white">
       <SafeAreaView className="flex-1 flex mx-5">
@@ -98,7 +140,7 @@ const HomeScreen = () => {
         {/* Recording, clear and stop buttons */}
         <View className="flex justify-center items-center">
           {recording ? (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={stopRecording}>
               <Image
                 className="rounded-full mt-6"
                 source={require('../../assets/images/voiceLoading.gif')}
@@ -106,7 +148,7 @@ const HomeScreen = () => {
               />
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={startRecording}>
               <Image
                 className="rounded-full mt-6"
                 source={require('../../assets/images/recordingIcon.png')}
@@ -121,7 +163,7 @@ const HomeScreen = () => {
               <Text className="text-white font-semibold ">Clear</Text>
             </TouchableOpacity>
           )}
-          {speaking > 0 && (
+          {speaking && (
             <TouchableOpacity
               onPress={stopSpeaking}
               className="bg-red-600 rounded-3xl p-2 absolute left-10 bottom-5">
@@ -133,5 +175,4 @@ const HomeScreen = () => {
     </View>
   );
 };
-
 export default HomeScreen;
