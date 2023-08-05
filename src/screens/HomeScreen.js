@@ -29,7 +29,6 @@ const HomeScreen = () => {
     console.log('Speech Started');
   };
   const speechEndHandler = () => {
-    setRecording(false);
     console.log('Speech ended');
   };
   const speechResultsHandler = e => {
@@ -47,9 +46,9 @@ const HomeScreen = () => {
     }
   };
   const stopRecording = async () => {
+    setRecording(false);
     try {
       await Voice.stop();
-      setRecording(false);
       //fetch response
     } catch (err) {
       console.log(err);
@@ -63,7 +62,6 @@ const HomeScreen = () => {
     return () => {
       Voice.destroy()
         .then(Voice.removeAllListeners)
-        .catch(e => console.log(e));
     }
   }, []);
   return (
@@ -113,7 +111,9 @@ const HomeScreen = () => {
                           key={index}
                           style={{width: wp(70)}}
                           className="bg-emerald-100 rounded-xl p-2 rounded-tl-none">
-                          <Text>{message.content}</Text>
+                          <Text className="text-gray-600">
+                            {message.content}
+                          </Text>
                         </View>
                       );
                     }
@@ -125,7 +125,9 @@ const HomeScreen = () => {
                         <View
                           style={{width: wp(70)}}
                           className="bg-white rounded-xl p-2 rounded-tr-none">
-                          <Text>{message.content}</Text>
+                          <Text className="text-gray-500">
+                            {message.content}
+                          </Text>
                         </View>
                       </View>
                     );
